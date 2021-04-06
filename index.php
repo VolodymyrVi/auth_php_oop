@@ -104,9 +104,10 @@ $app->post('/register-post', function(ServerRequestInterface $request, ResponseI
     return $response->withHeader('Location', '/')->withStatus(302);
 });
 
-$app->get('/logout', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
-    
-    return $response;
+$app->get('/logout', function(ServerRequestInterface $request, ResponseInterface $response) use ($session) {
+    $session->setData('user', null);
+
+    return $response->withHeader('Location', '/')->withStatus(302);
 });
 
 $app->run();
