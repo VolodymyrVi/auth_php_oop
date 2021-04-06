@@ -38,6 +38,28 @@ class Authorization
         }
         
         $statement = $this->database->getConnection()->prepare(
+            'SELECT * FROM user WHERE email = :email'
+        );
+        $statement->execute([
+            'email' => $data['email']
+        ]);
+        $user = $statement->fetch();
+        if (!empty($user)){
+            throw new AuthorizationException('User with such email exists');
+        }
+
+        $statement = $this->database->getConnection()->prepare(
+            'SELECT * FROM user WHERE username = :username'
+        );
+        $statement->execute([
+            'username' => $data['username']
+        ]);
+        $user = $statement->fetch();
+        if (!empty($user)){
+            throw new AuthorizationException('User with such username exists');
+        }
+
+        $statement = $this->database->getConnection()->prepare(
             'INSERT INTO user (email, username, password) VALUES (:email, :username, :password)'
         );
 

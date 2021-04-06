@@ -68,7 +68,8 @@ $app->post('/login-post', function(ServerRequestInterface $request, ResponseInte
 $app->get('/register', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig, $session) {
     
     $body = $twig->render('register.twig',[
-        'message' => $session->flush('message')
+        'message' => $session->flush('message'),
+        'form' => $session->flush('form'),
     ]);
     
     $response->getBody()->write($body);
@@ -84,6 +85,7 @@ $app->post('/register-post', function(ServerRequestInterface $request, ResponseI
         $authorization->register($params);
     } catch (AuthorizationException $exception) {
         $session->setData('message', $exception->getMessage());
+        $session->setData('form', $params);
         return $response->withHeader('Location', '/register')->withStatus(302);
     }
     return $response->withHeader('Location', '/')->withStatus(302);
