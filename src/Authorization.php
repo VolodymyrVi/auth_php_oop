@@ -25,8 +25,18 @@ class Authorization
     public function register(array $data): bool
     {
         if (empty($data['username'])){
-            throw new AuthorizationException('The username should not be empty');
+            throw new AuthorizationException('The Username should not be empty');
         }
+        if (empty($data['email'])){
+            throw new AuthorizationException('The Email should not be empty');
+        }
+        if (empty($data['password'])){
+            throw new AuthorizationException('The Password should not be empty');
+        }
+        if ($data['password'] !==$data['confirm_password']){
+            throw new AuthorizationException('The Password and Confirm Pssword should match');
+        }
+
         return true;
     }
 }
