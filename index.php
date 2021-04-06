@@ -15,7 +15,7 @@ $twig = new Environment($loader);
 $app = AppFactory::create();
 
 $config = include_once 'config/database.php';
-$dsn = $config['dns'];
+$dsn = $config['dsn'];
 $username = $config['username'];
 $password = $config['password'];
 

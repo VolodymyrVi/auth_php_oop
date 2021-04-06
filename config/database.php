@@ -1,7 +1,6 @@
 <?php
-
 return [
-    'dns' =>  'mysql:dbname=login_register;host=localhost',
+    'dsn' =>  'mysql:dbname=login_register;host=127.0.0.1',
     'username' => 'root',
-    'password' => '',
-]
+    'password' => 'root',
+];
