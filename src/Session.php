@@ -1,7 +1,5 @@
 <?php
 
-declare(script_types=1);
-
 namespace App;
 
 class Session
@@ -29,10 +27,6 @@ class Session
     {
         return !empty($_SESSION[$key]) ? $_SESSION[$key] : null;
     }
-    /**
-     *
-     * @return void
-     */
     public function save(): void
     {
         session_write_close();

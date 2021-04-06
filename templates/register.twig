@@ -2,6 +2,13 @@
 
 {% block body %}
     <h1>Register Form</h1>
+
+    {% if message is not null %}
+        <div class="alert alert-dander" role="alert">
+            {{ message }}
+        </div>
+    {% endif %}
+
     <form method="post" action = "/register-post">
         <div class="form-group">
             <label for="username"> Username </label>

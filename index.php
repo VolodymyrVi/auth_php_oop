@@ -3,8 +3,10 @@
 use App\Authorization;
 use App\AuthorizationException;
 use App\Database;
+use App\Session;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Factory\AppFactory;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -17,6 +19,18 @@ $twig = new Environment($loader);
 $app = AppFactory::create();
 
 $app->addBodyParsingMiddleware();
+
+$session = new Session();
+
+$sessionMiddleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($session) {
+    $session->start();
+    $response = $handler->handle($request);
+    $session->save();
+
+    return $response;
+};
+
+$app->add($sessionMiddleware);
 
 $config = include_once 'config/database.php';
 $dsn = $config['dsn'];
@@ -51,22 +65,25 @@ $app->post('/login-post', function(ServerRequestInterface $request, ResponseInte
     return $response;
 });
 
-$app->get('/register', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
+$app->get('/register', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig, $session) {
     
-    $body = $twig->render('register.twig');
+    $body = $twig->render('register.twig',[
+        'message' => $session->flush('message')
+    ]);
     
     $response->getBody()->write($body);
     
     return $response;
 });
 
-$app->post('/register-post', function(ServerRequestInterface $request, ResponseInterface $response) use ($authorization) {
+$app->post('/register-post', function(ServerRequestInterface $request, ResponseInterface $response) use ($authorization, $session) {
     
     $params = (array) $request->getParsedBody();
 
     try {
         $authorization->register($params);
     } catch (AuthorizationException $exception) {
+        $session->setData('message', $exception->getMessage());
         return $response->withHeader('Location', '/register')->withStatus(302);
     }
     return $response->withHeader('Location', '/')->withStatus(302);
