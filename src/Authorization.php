@@ -36,7 +36,16 @@ class Authorization
         if ($data['password'] !==$data['confirm_password']){
             throw new AuthorizationException('The Password and Confirm Pssword should match');
         }
+        
+        $statement = $this->database->getConnection()->prepare(
+            'INSERT INTO user (email, username, password) VALUES (:email, :username, :password)'
+        );
 
+        $statement->execute([
+            'email' => $data['email'],
+            'username' => $data['username'],
+            'password' => password_hash($data['password'], PASSWORD_BCRYPT),
+        ]);
         return true;
     }
 }
