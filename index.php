@@ -1,5 +1,6 @@
 <?php
 
+use App\Datebase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Factory\AppFactory;
@@ -12,6 +13,8 @@ $loader = new FilesystemLoader('templates');
 $twig = new Environment($loader);
 
 $app = AppFactory::create();
+
+$datebase = new Datebase($dsn, $username, $password);
 
 $app->get('/', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
     
