@@ -1,5 +1,7 @@
 <?php
 
+use App\Authorization;
+use App\AuthorizationException;
 use App\Database;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,12 +16,17 @@ $twig = new Environment($loader);
 
 $app = AppFactory::create();
 
+$app->addBodyParsingMiddleware();
+
 $config = include_once 'config/database.php';
 $dsn = $config['dsn'];
 $username = $config['username'];
 $password = $config['password'];
 
-$datebase = new Database($dsn, $username, $password);
+$database = new Database($dsn, $username, $password);
+
+$authorization = new Authorization($database);
+
 
 $app->get('/', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
     
@@ -53,9 +60,19 @@ $app->get('/register', function(ServerRequestInterface $request, ResponseInterfa
     return $response;
 });
 
-$app->post('/register-post', function(ServerRequestInterface $request, ResponseInterface $response){
+$app->post('/register-post', function(ServerRequestInterface $request, ResponseInterface $response) use ($authorization) {
     
-    return $response;
+    $params = (array) $request->getParsedBody();
+
+    try {
+        $authorization->register($params);
+    } catch (AuthorizationException $exception) {
+        return $response->withHeader('Locationn', '/register')
+        ->withStatus(302);
+    }
+
+    return $response->withHeader('Locationn', '/')
+    ->withStatus(302);
 });
 
 $app->get('/logout', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
