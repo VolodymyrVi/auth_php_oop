@@ -22,9 +22,11 @@ $app->get('/', function(ServerRequestInterface $request, ResponseInterface $resp
     return $response;
 });
 
-$app->get('/login', function(ServerRequestInterface $request, ResponseInterface $response){
+$app->get('/login', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
     
-    $response->getBody()->write('Login Page');
+    $body = $twig->render('login.twig');
+    
+    $response->getBody()->write($body);
     
     return $response;
 });
@@ -34,9 +36,11 @@ $app->post('/login-post', function(ServerRequestInterface $request, ResponseInte
     return $response;
 });
 
-$app->get('/register', function(ServerRequestInterface $request, ResponseInterface $response){
+$app->get('/register', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
     
-    $response->getBody()->write('Register Page');
+    $body = $twig->render('register.twig');
+    
+    $response->getBody()->write($body);
     
     return $response;
 });
@@ -46,7 +50,7 @@ $app->post('/register-post', function(ServerRequestInterface $request, ResponseI
     return $response;
 });
 
-$app->get('/logout', function(ServerRequestInterface $request, ResponseInterface $response){
+$app->get('/logout', function(ServerRequestInterface $request, ResponseInterface $response) use ($twig) {
     
     return $response;
 });
