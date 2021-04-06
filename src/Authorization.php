@@ -6,14 +6,18 @@ namespace App;
 class Authorization
 {
     private Database $database;
+
+    private Session $session;
     /**
-     * Undocumented function
+     * 
      *
      * @param Database $database
+     * @param Session $session
      */
-    public function __construct(Database $database)
+    public function __construct(Database $database, Session $session)
     {
         $this->database = $database;
+        $this->session = $session;
     }
     /**
      * Authoriztion function register
@@ -69,5 +73,42 @@ class Authorization
             'password' => password_hash($data['password'], PASSWORD_BCRYPT),
         ]);
         return true;
+    }
+    /**
+     * Undocumented function
+     *
+     * @param string $email
+     * @param [type] $password
+     * @return boolean
+     * @throws AuthorizationException
+     */
+    public function login(string $email, $password): bool
+    {
+        if (empty($email)){
+            throw new AuthorizationException('The Email should not be empty');
+        }
+        if (empty($password)){
+            throw new AuthorizationException('The Password should not be empty');
+        }
+
+        $statement = $this->database->getConnection()->prepare(
+            'SELECT * FROM user WHERE email = :email'
+        );
+        $statement->execute([
+            'email' => $email
+        ]);
+        $user = $statement->fetch();
+        if (empty($user)){
+            throw new AuthorizationException('User with such email not found');
+        }
+        if (password_verify($password, $user['password'])){
+            $this->session->setData('user',[
+                'user_id' => $user['user_id'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+            ]);
+            return true;
+        }
+        throw new AuthorizationException('Incorrecr email or password');
     }
 }

@@ -23,7 +23,7 @@ class Session
      * @param string $key
      * @return void
      */
-    public function getDate(string $key)
+    public function getData(string $key)
     {
         return !empty($_SESSION[$key]) ? $_SESSION[$key] : null;
     }
@@ -38,7 +38,7 @@ class Session
      */
     public function flush(string $key)
     {
-        $value = $this->getDate($key);
+        $value = $this->getData($key);
         $this->unset($key);
 
         return $value;
